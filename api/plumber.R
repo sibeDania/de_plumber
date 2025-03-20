@@ -16,6 +16,61 @@ books <- readRDS("data/books.rds")
 #* @apiTitle Data Engineering 2025 API
 #* @apiDescription Plumber example description.
 
+#* @get /books
+#* @param author
+#* @param year
+#* @param from_year
+#* @param to_year
+#* 
+function(author = NULL, year = NULL, from_year = NULL, to_year = NULL) {
+  result <- books
+  
+  if (!is.null(author)) {
+    result <- result[grep(author, result$author, ignore.case = TRUE), ]
+  }
+  if (!is.null(year)) {
+    result <- result[result$year == as.numeric(year), ]
+  }
+  if (!is.null(from_year)) {
+    result <- result[result$year >= as.numeric(from_year), ]
+  }
+  if (!is.null(to_year)) {
+    result <- result[result$year <= as.numeric(to_year), ]
+  }
+  return(result)
+  
+}
+
+#* @post /books
+#* @param title:string Book title
+#* @param author:string Author name
+#* @param year:integer Publication year
+
+function(title, author, year) {
+  
+  new_book <- data.frame(
+    title = title,
+    author = author,
+    year = as.integer(year),
+    stringsAsFactors = FALSE
+  )
+  
+  books <- rbind(books, new_book)
+  
+  return(list(
+    message("Book added succesfully"),
+    book = new_book
+  ))
+  
+}
+
+#####
+
+
+
+
+
+
 #* Echo back the input
 #* @param msg The message to echo
 #* @get /echo
