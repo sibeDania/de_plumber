@@ -16,6 +16,25 @@ books <- readRDS("data/books.rds")
 #* @apiTitle Data Engineering 2025 API
 #* @apiDescription Plumber example description.
 
+#* Get author statistics
+#* @get /authors/stats
+function() {
+  author_stats <- list()
+  unique_authors <- unique(books$author)
+  
+  for (author in unique_authors) {
+    author_books <- books[books$author == author, ]
+    author_stats[[author]] <- list(
+      total_books = nrow(author_books),
+      years_active = paste(min(author_books$year), "-", max(author_books$year)),
+      books = author_books$title
+    )
+  }
+  
+  return(author_stats)
+}
+
+
 #* @get /books
 #* @param author
 #* @param year
